@@ -34,7 +34,12 @@ def include(relative_path_to_other_file, your_globals=None):
         output = ""
         with open(path_to_file,'r') as f:
             output = f.read()
-        exec(output, their_globals, their_locals)
+        try:
+            exec(output, their_globals, their_locals)
+        except Exception as error:
+            import traceback
+            traceback_str = traceback.format_exc()
+            raise Exception(traceback_str + "\n\nError on: " + path_to_file + ":" + str(error.__traceback__.tb_next.tb_lineno) + "\nfrom the include(\'"+relative_path_to_other_file+"\')")
         their_globals.update(their_locals)
         __ALL_MODULES__[path_to_file] = their_globals
     
