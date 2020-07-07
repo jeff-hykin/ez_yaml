@@ -9,6 +9,18 @@ import os
 __ALL_MODULES__ = {}
 # TODO: add a check for circular inports
 def include(relative_path_to_other_file, your_globals=None):
+    '''Import all of the globals/locals from a file into the current file
+    This will not run code more than once, even if it is included multiple times
+    As of version 0.0.1, there is no circular depencency checker.
+
+    :param str relative_path_to_other_file: The path to the file you want to include
+    :param int your_globals: put globals() unless you know what you're doing
+
+    Usage::
+      >>> import include
+      >>> include.include('file.py', globals())
+      >>> # you now have access to all the funcs/vars from 'file.py'
+    '''
     path_to_file = resolve_path(relative_path_to_other_file, upstack=1)
     
     # init your_globals if the argument wasn't included

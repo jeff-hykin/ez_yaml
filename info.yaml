@@ -5,6 +5,7 @@
     
     (commands):
         build: python setup.py bdist_wheel
+        install: pip install -e . 
     
     (paths):
         main: ./include/include.py
