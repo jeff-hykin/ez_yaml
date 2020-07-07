@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 generic_globals = dict(globals())
-generic_locals  = dict(locals())
+generic_globals.update(dict(locals()))
 
 import inspect
 import os
@@ -29,16 +29,14 @@ def include(relative_path_to_other_file, your_globals=None):
     
     # if file hasn't been loaded yet
     if not (path_to_file in __ALL_MODULES__):
-        their_locals = dict(generic_globals)
-        their_globals = dict(generic_locals)
+        their_globals = dict(generic_globals)
         # set their path so things don't break
         their_globals['__file__'] = path_to_file
-        their_locals['__file__'] = path_to_file
         output = ""
         with open(path_to_file,'r') as f:
             output = f.read()
         try:
-            exec(output, their_globals, their_locals)
+            exec(output, their_globals, their_globals)
         except Exception as error:
             import traceback
             traceback_str = traceback.format_exc()
