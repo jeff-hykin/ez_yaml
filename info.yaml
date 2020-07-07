@@ -4,9 +4,11 @@
     description: Describe your project here
     
     (commands):
-        build: python setup.py bdist_wheel
+        build: python setup.py bdist_wheel sdist
+        publish: twine upload dist/*
         install: pip install -e . 
     
     (paths):
         main: ./include/include.py
         project_root: ./
+        
