@@ -1,0 +1,11 @@
+(using_atk_version): 1.1.0
+(project):
+    name: Your Project Name Here
+    description: Describe your project here
+    
+    (commands):
+        build: python setup.py bdist_wheel
+    
+    (paths):
+        main: ./include/include.py
+        project_root: ./
