@@ -1,7 +1,6 @@
 (using_atk_version): 1.1.0
 (project):
-    name: Your Project Name Here
-    description: Describe your project here
+    name: Python Include
     
     (commands):
         build: python setup.py bdist_wheel sdist
