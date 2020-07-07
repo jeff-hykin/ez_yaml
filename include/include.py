@@ -41,7 +41,7 @@ def include(relative_path_to_other_file, your_globals=None):
             import traceback
             traceback_str = traceback.format_exc()
             raise Exception(traceback_str + "\n\nError on: " + path_to_file + ":" + str(error.__traceback__.tb_next.tb_lineno) + "\nfrom the include(\'"+relative_path_to_other_file+"\')")
-        their_globals.update(their_locals)
+        
         __ALL_MODULES__[path_to_file] = their_globals
     
     # combine their globals into your globals
