@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='python-include',
-    version='0.0.2',
+    version='0.0.3',
     description="Path based import-all in Python, inspired by Ruby's include",
     url='https://github.com/jeff-hykin/python-include',
     author='Jeff Hykin',

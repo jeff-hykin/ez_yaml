@@ -31,6 +31,9 @@ def include(relative_path_to_other_file, your_globals=None):
     if not (path_to_file in __ALL_MODULES__):
         their_locals = dict(generic_globals)
         their_globals = dict(generic_locals)
+        # set their path so things don't break
+        their_globals['__file__'] = path_to_file
+        their_locals['__file__'] = path_to_file
         output = ""
         with open(path_to_file,'r') as f:
             output = f.read()
