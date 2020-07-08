@@ -14,4 +14,5 @@
     
     todo:
         - fix relative imports from included modules
-        - better error handling (when a function in included code throws an error, somehow capture that and report its actual file location)
+        - better error handling (when a function in included code throws an error, somehow capture that and report its actual file location):
+            replace the global instance of Exception() and override the path to report where the actual file was from

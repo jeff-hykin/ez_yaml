@@ -21,6 +21,9 @@ def include(relative_path_to_other_file, your_globals=None):
       >>> include.include('file.py', globals())
       >>> # you now have access to all the funcs/vars from 'file.py'
     '''
+    if not your_globals:
+        your_globals = {}
+
     if not your_globals.get("__file__", None):
         your_globals["__file__"] = os.getcwd() + "/<REPL>"
     path_to_file = os.path.abspath(os.path.join(os.path.dirname(your_globals["__file__"]), relative_path_to_other_file))
@@ -32,6 +35,7 @@ def include(relative_path_to_other_file, your_globals=None):
     # if file hasn't been loaded yet
     if not (path_to_file in __ALL_MODULES__):
         their_globals = dict(generic_globals)
+        their_globals.update(your_globals)
         # set their path so things don't break
         their_globals['__file__'] = path_to_file
         output = ""
@@ -41,8 +45,16 @@ def include(relative_path_to_other_file, your_globals=None):
             exec(output, their_globals, their_globals)
         except Exception as error:
             import traceback
+            # traceback_tuple = traceback.format_list(traceback.extract_tb(error.__traceback__))
             traceback_str = traceback.format_exc()
-            raise Exception(traceback_str + "\n\nError on: " + path_to_file + ":" + str(error.__traceback__.tb_next.tb_lineno) + "\nfrom the include(\'"+relative_path_to_other_file+"\')")
+            
+            # for some reason sometimes the "tb_next" doesn't exist and then its hard to get the actual line number
+            line_number = ""
+            if error.__traceback__.tb_next:
+                line_number = ":" + str(tb_frame.tb_lineno)
+            
+            raise Exception(traceback_str + "\n\nError from: " + path_to_file + line_number + "\nfrom the include(\'"+relative_path_to_other_file+"\')")
+        
         __ALL_MODULES__[path_to_file] = their_globals
     
     # combine their globals into your globals
