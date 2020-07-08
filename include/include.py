@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
-generic_globals = dict(globals()).update(dict(locals()))
+generic_globals = dict(globals())
+generic_globals.update(dict(locals()))
 
 import inspect
 import os

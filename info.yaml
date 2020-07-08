@@ -10,4 +10,8 @@
     (paths):
         main: ./include/include.py
         project_root: ./
-        
+    
+    
+    todo:
+        - better error handling (when a function in included code throws an error, somehow capture that and report its actual file location)
+        - fix relative imports from included modules
