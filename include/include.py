@@ -21,7 +21,9 @@ def include(relative_path_to_other_file, your_globals=None):
       >>> include.include('file.py', globals())
       >>> # you now have access to all the funcs/vars from 'file.py'
     '''
-    path_to_file = resolve_path(relative_path_to_other_file, upstack=1)
+    if not your_globals.get("__file__", None):
+        your_globals["__file__"] = os.getcwd() + "/<REPL>"
+    path_to_file = os.path.abspath(os.path.join(os.path.dirname(your_globals["__file__"]), relative_path_to_other_file))
     
     # init your_globals if the argument wasn't included
     if your_globals == None:
@@ -45,32 +47,9 @@ def include(relative_path_to_other_file, your_globals=None):
     
     # combine their globals into your globals
     their_globals = __ALL_MODULES__[path_to_file]
+    # remove the one thing that should be unique to their file
+    del their_globals["__file__"]
     # put their globals into your file
     your_globals.update(their_globals)
     # return the globals for good measure
     return your_globals
-
-def resolve_path(path, upstack=0):
-    # this function was pulled from https://github.com/pcattori/require.py 
-    # you can tell because it has good docstrings
-    '''Resolve a path to an absolute path by taking it to be relative to the source
-    code of the caller's stackframe shifted up by `upstack` frames.
-
-    :param str path: Filesystem path
-    :param int upstack: Number of stackframes upwards from caller's stackframe
-    to act as relative point.
-
-    #: TODO Usage example is not great on REPL...
-
-    Usage::
-      >>> import require # at /home/require
-      >>> require.resolve_path('file.txt')
-      '/home/require/file.txt'
-    '''
-    if os.path.isabs(path):
-        return path
-    # get absolute path by rooting path with calling script directory
-    # TODO guard rails for upstack? 
-    caller_relative_filepath = inspect.stack()[upstack + 1][1]
-    caller_root = os.path.dirname(os.path.abspath(caller_relative_filepath))
-    return os.path.abspath(os.path.join(caller_root, path))
