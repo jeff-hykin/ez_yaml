@@ -48,7 +48,8 @@ def include(relative_path_to_other_file, your_globals=None):
     # combine their globals into your globals
     their_globals = __ALL_MODULES__[path_to_file]
     # remove the one thing that should be unique to their file
-    del their_globals["__file__"]
+    if "__file__" in their_globals:
+        del their_globals["__file__"]
     # put their globals into your file
     your_globals.update(their_globals)
     # return the globals for good measure
