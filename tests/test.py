@@ -1,5 +1,5 @@
-from include import include
+import include
 
-include("./include_me.py", globals())
+include.file("./nested/include_me.py", globals())
 
 hello()
