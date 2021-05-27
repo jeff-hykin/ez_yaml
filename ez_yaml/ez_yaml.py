@@ -79,3 +79,103 @@ def merge_files_to_object(*files, options=None):
         running_object = merge(running_object, yaml.load(Path(file), **options))
 
     return running_object
+
+
+def _convert_to_yaml(representer, yaml_tag, value):
+    from datetime import date, datetime
+    print('type(value) = ', type(value))
+    # detect value type
+    if value is None:
+        print('none')
+        # use string otherwise it puts a blank space/area
+        # this is still equivlent to null because there's no quotes
+        output = representer.represent_str("null")
+        output.tag = yaml_tag
+        return output
+    elif type(value) is bool:
+        print('bool')
+        output = representer.represent_bool(value)
+        output.tag = yaml_tag
+        return output
+    elif type(value) is int:
+        print('int')
+        output = representer.represent_int(value)
+        output.tag = yaml_tag
+        return output
+    elif type(value) is float:
+        print('float')
+        output = representer.represent_float(value)
+        output.tag = yaml_tag
+        return output
+    elif type(value) is str:
+        print('str')
+        output = representer.represent_str(value)
+        # use either block or quoted string styles
+        output.style = "|" if "\n" in value else  "'"
+        output.tag = yaml_tag
+        return output
+    elif isinstance(value, date):
+        print('date')
+        output = representer.represent_date( value)
+        output.tag = yaml_tag
+        return output
+    elif isinstance(value, datetime):
+        print('datetime')
+        output = representer.represent_datetime(value)
+        output.tag = yaml_tag
+        return output
+    elif isinstance(value, dict):
+        print('dict')
+        return representer.represent_mapping(yaml_tag, value)
+    elif isinstance(value,list) or isinstance(value,tuple):
+        print('list')
+        return representer.represent_sequence(yaml_tag, value)
+    else:
+        raise Exception('Error: not sure how to convert '+str(type(value))+' to a yaml node')
+
+class CustomObject:
+    yaml_tag = '!argument'
+    def __init__(self, value):
+        self.value = value
+
+    @classmethod
+    def to_yaml(cls, representer, self):
+        return _convert_to_yaml(representer, cls.yaml_tag, self.value)
+
+    @classmethod
+    def from_yaml(cls, constructor, node):
+        from ruamel.yaml import YAML
+        from ruamel.yaml.nodes import SequenceNode, MappingNode
+        from ruamel.yaml.comments import CommentedMap
+        # primitives
+        if type(node.value) == str:
+            print('node = ', node)
+            # definitely a string
+            if node.style is not None:
+                return cls(node.value)
+            else:
+                # parse as a normal yaml value
+                value = YAML().load(node.value)
+                return cls(value)
+        # lists
+        elif type(node) == SequenceNode:
+            list_values = constructor.construct_sequence(node, deep=True)
+            return cls(list_values)
+        # mappings
+        elif type(node) == MappingNode:
+            data = CommentedMap()
+            constructor.construct_mapping(node, data, deep=True)
+            return cls(data)
+
+ez_yaml.yaml.register_class(CustomObject)
+
+# TODO: make a class decorator for this
+# TODO: make a functional decorator for this yaml.add_tag("!argument", lambda old_value: new_value)
+# TODO: make a functional decorator for this yaml.add_class(AClass, lambda object: plain_python_obj)
+
+my_object = ez_yaml.to_object("""
+val1:
+    value2: !argument "2001-12-14"
+""")
+print('my_object = ', my_object)
+print('ez_yaml.to_string(my_object) = ', ez_yaml.to_string(my_object))
