@@ -1,2 +1,1 @@
-from __future__ import absolute_import
-from include.include import *
+from ez_yaml.ez_yaml import *
