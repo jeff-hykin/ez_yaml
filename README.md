@@ -1,17 +1,30 @@
 # Install
 
-`pip install python-include`
+`pip install ez_yaml`
 
 # Use
 
-```
-import include
+```python
+import ez_yaml
 
-# import [name] from-anywhere (doesnt pollute global namespace)
-hello = include.file("./path/to/file/with/hello/func/code.py", {"__file__":__file__}).hello
-hello()
+# to_string(obj, options={})
+ez_yaml.to_string({"thing": 1, "abc": [ 1,2,3 ]})
 
-# import [*everything*] from-anywhere (does pollute global namespace)
-include.file("./path/to/file/with/hello/func/code.py", globals())
-hello() # function that was defined inside that^ "code.py"
+# to_object(file_path, options={})
+# to_object(string   , options={})
+ez_yaml.to_object(string='''
+
+thing: 1
+abc:
+    - 1
+    - 2
+    - 3
+
+''')
+
+# to_file(obj, file_path, options={})
+ez_yaml.to_file(
+    {"thing": 1, "abc": [ 1,2,3 ]},
+    file_path="./my_file.yaml",
+)
 ```
