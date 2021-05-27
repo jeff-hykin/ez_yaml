@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='ez_yaml',
-    version='1.0.2',
+    version='1.1.0',
     description="Straighforward wrapper around Ruamel Yaml",
     url='https://github.com/jeff-hykin/ez_yaml',
     author='Jeff Hykin',
