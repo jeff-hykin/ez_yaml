@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "ez_yaml"
+version = "1.2.0"
+description = "Straighforward wrapper around Ruamel Yaml"
+authors=[]
+
+[tool.extra]
+author='Jeff Hykin'
+author_email='jeff.hykin@gmail.com'
+url='https://github.com/jeff-hykin/ez_yaml'
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = ">=3.6,<3.12"
+pip = "20.1.1"
+
+[tool.poetry.dev-dependencies]
+twine = "3.4.1"
+"keyrings.alt" = "4.0.2"
+toml = "^0.10.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

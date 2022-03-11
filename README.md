@@ -27,4 +27,3 @@ ez_yaml.to_file(
     {"thing": 1, "abc": [ 1,2,3 ]},
     file_path="./my_file.yaml",
 )
-```
