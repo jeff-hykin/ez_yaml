@@ -22,19 +22,93 @@ def to_string(obj, options=None):
     string_stream.close()
     return output_str
 
-def to_object(string=None, file_path=None, options=None):
+def to_object(string=None, file_path=None, options=None, load_nested_yaml=False):
     if options == None: options = {}
     if file_path is not None:
         as_path_object = Path(file_path)
-        return yaml.load(as_path_object, **options)
+        output = yaml.load(as_path_object, **options)
+        if load_nested_yaml:
+            output = eval_load_yaml_file_tag(output, original_file_path=file_path) 
+        return output
     else:
-        return yaml.load(string, **options)
+        output = yaml.load(string, **options)
+        if load_nested_yaml:
+            output = eval_load_yaml_file_tag(output, original_file_path=":<inline-string>:") 
+        return output
 
 def to_file(obj, file_path, options=None):
     if options == None: options = {}
     as_path_object = Path(file_path)
     with as_path_object.open('w') as output_file:
         return yaml.dump(obj, output_file, **options)
+
+def eval_load_yaml_file_tag(yaml_obj, key_list=[], original_file_path=""):
+    if isinstance(yaml_obj, ruamel.yaml.comments.TaggedScalar):
+        # if has the !load_yaml_file
+        if yaml_obj.tag == "!load_yaml_file":
+            load_file_path = yaml_obj.value
+            try:
+                data = to_object(file_path=load_file_path)
+                return data
+            except Exception as error:
+                if not FileSystem.is_file(load_file_path):
+                    raise Exception(f"""
+                    
+                        ---------------------------------------------------------------------------------
+                        When loading the yaml file: {original_file_path}
+                        following these keys {key_list}
+                        there is a value of: {yaml_obj.tag} "{load_file_path}"
+                        
+                        So I tried to load "{load_file_path}" but it doesn't seem to exist
+                        
+                        LIKELY SOLUTION:
+                            Create a yaml file at "{load_file_path}"
+                        
+                        ALTERNATIVE SOLUTIONS:
+                            - Fix an error with the file path
+                            - Comment out the line with !load_yaml_file
+                            - Remove just the "!load_yaml_file" from the line
+                        ---------------------------------------------------------------------------------
+                    """.replace("\n                    ", "\n"))
+                else:
+                    raise Exception(f"""
+                    
+                        ---------------------------------------------------------------------------------
+                        When loading the yaml file: {original_file_path}
+                        following these keys {key_list}
+                        there is a value of: {yaml_obj.tag} "{load_file_path}"
+                        
+                        So I tried to load "{load_file_path}" but it threw an error:
+                        
+                        __error__
+                        {error}
+                        __error__
+                        
+                        LIKELY SOLUTION:
+                            The yaml file at: "{load_file_path}"
+                            is corrupt/invalid so fix the syntax errors with it
+                        
+                        ALTERNATIVE SOLUTIONS:
+                            - Comment out the line with !load_yaml_file
+                            - Have make the file path to a different file
+                            - Remove just the "!load_yaml_file" from the line
+                        ---------------------------------------------------------------------------------
+                    """.replace("\n                    ", "\n"))
+        
+    if isinstance(yaml_obj, dict):
+        return {
+            key : eval_load_yaml_file(value, key_list=key_list+[key], original_file_path=original_file_path)
+            
+            for key, value in yaml_obj.items() 
+        }
+    elif isinstance(yaml_obj, list):
+        return [
+            eval_load_yaml_file(value, key_list=key_list+[key], original_file_path=original_file_path)
+            
+            for key, value in enumerate(yaml_obj)
+        ]
+    else:
+        return yaml_obj
 
 def merge_files_to_object(*files, options=None):
     if options == None: options = {}
