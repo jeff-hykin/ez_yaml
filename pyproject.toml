@@ -13,6 +13,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = ">=3.6,<3.12"
 pip = "20.1.1"
+"ruamel.yaml" = "^0.17.21"
 
 [tool.poetry.dev-dependencies]
 twine = "3.4.1"

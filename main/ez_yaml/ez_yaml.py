@@ -1,6 +1,7 @@
 import ruamel.yaml
 from io import StringIO
 from pathlib import Path
+import os
 
 # setup loader (basically options)
 yaml = ruamel.yaml.YAML()
@@ -43,21 +44,34 @@ def to_file(obj, file_path, options=None):
         return yaml.dump(obj, output_file, **options)
 
 def eval_load_yaml_file_tag(yaml_obj, key_list=[], original_file_path=""):
+    """
+    # file1.yaml
+    thing: !load_yaml_file ./file2.yaml
+    
+    # file2.yaml
+    value1: 1
+    value2: 2
+    """
     if isinstance(yaml_obj, ruamel.yaml.comments.TaggedScalar):
+        tag = yaml_obj.tag.value
         # if has the !load_yaml_file
-        if yaml_obj.tag == "!load_yaml_file":
+        if tag == "!load_yaml_file":
             load_file_path = yaml_obj.value
+            # make the path relative to the yaml file instead of cwd
+            if not os.path.isabs(load_file_path):
+                load_file_path = os.path.join(os.path.dirname(original_file_path), load_file_path)
             try:
                 data = to_object(file_path=load_file_path)
+                print(f'''data = {data}''')
                 return data
             except Exception as error:
-                if not FileSystem.is_file(load_file_path):
+                if not os.path.isfile(load_file_path):
                     raise Exception(f"""
                     
                         ---------------------------------------------------------------------------------
                         When loading the yaml file: {original_file_path}
                         following these keys {key_list}
-                        there is a value of: {yaml_obj.tag} "{load_file_path}"
+                        there is a value of: {tag} "{load_file_path}"
                         
                         So I tried to load "{load_file_path}" but it doesn't seem to exist
                         
@@ -76,7 +90,7 @@ def eval_load_yaml_file_tag(yaml_obj, key_list=[], original_file_path=""):
                         ---------------------------------------------------------------------------------
                         When loading the yaml file: {original_file_path}
                         following these keys {key_list}
-                        there is a value of: {yaml_obj.tag} "{load_file_path}"
+                        there is a value of: {tag} "{load_file_path}"
                         
                         So I tried to load "{load_file_path}" but it threw an error:
                         
@@ -97,13 +111,13 @@ def eval_load_yaml_file_tag(yaml_obj, key_list=[], original_file_path=""):
         
     if isinstance(yaml_obj, dict):
         return {
-            key : eval_load_yaml_file(value, key_list=key_list+[key], original_file_path=original_file_path)
+            key : eval_load_yaml_file_tag(value, key_list=key_list+[key], original_file_path=original_file_path)
             
             for key, value in yaml_obj.items() 
         }
     elif isinstance(yaml_obj, list):
         return [
-            eval_load_yaml_file(value, key_list=key_list+[key], original_file_path=original_file_path)
+            eval_load_yaml_file_tag(value, key_list=key_list+[key], original_file_path=original_file_path)
             
             for key, value in enumerate(yaml_obj)
         ]

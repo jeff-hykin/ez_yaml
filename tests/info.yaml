@@ -1,0 +1,8 @@
+a : 10
+b :
+    - 1
+    - 2
+    - 5
+
+c : !taggedddd "blah blah blah"
+d : !load_yaml_file "./sub_yamls/thing1.yaml"
