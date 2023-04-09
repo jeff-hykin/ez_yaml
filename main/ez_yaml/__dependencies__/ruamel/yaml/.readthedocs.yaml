@@ -1,0 +1,13 @@
+version: 2
+
+sphinx:
+  configuration: _doc/conf.py
+
+formats: [epub, pdf]
+
+python:
+  version: 3.7
+  install:
+  - method: pip
+    path: . 
+    extra_requirements: [docs]
