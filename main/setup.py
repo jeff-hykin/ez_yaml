@@ -26,11 +26,7 @@ setuptools.setup(
     license=package_info["license"],
     packages=[package_info["name"]],
     install_requires=[
-        "ruamel.yaml", # tested on 0.17.21"
-        # examples:
-        # 'aiohttp >= 3.7.4',
-        # 'python-socketio >= 5.3.0',
-        # 'requests == 2.26.0',
+        # "ruamel.yaml", # tested on 0.17.21"
     ],
     classifiers=[
         # examples:

@@ -1,4 +1,4 @@
-import ruamel.yaml
+from .__dependencies__ import ruamel.yaml
 from io import StringIO
 from pathlib import Path
 import os
