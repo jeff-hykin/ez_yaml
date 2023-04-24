@@ -194,13 +194,12 @@ def check_anchorname_char(ch):
     return check_namespace_char(ch)
 
 
-module_name = ".".join(__name__.split(".")[:-2]) # __name__ = "ez_yaml.__dependencies__.ruamel.yaml.compat"
 def version_tnf(t1, t2=None):
     # type: (Any, Any) -> Any
     """
     return True if ruamel.yaml version_info < t1, None if t2 is specified and bigger else False
     """
-    exec(f"from {module_name}.yaml import version_info") # scoped equivlent of: import ruamel.yaml as yaml
+    exec(f"from {__package__}.__init__ import version_info; print(version_info)", globals(), globals())
     if version_info < t1:
         return True
     if t2 is not None and version_info < t2:
