@@ -6,7 +6,6 @@ import os
 
 # setup loader (basically options)
 yaml = ruamel.yaml.YAML()
-yaml.version = (1, 2)
 yaml.indent(mapping=3, sequence=2, offset=0)
 yaml.allow_duplicate_keys = True
 yaml.explicit_start = False
