@@ -6,3 +6,7 @@
     - move everything to __init__ for local import
 1.3.0
     - remove all dependencies, use local versions instead
+1.1.0
+    - add !load_yaml_file support and merge_files_to_object()
+1.0.2
+    - initial release of to_string(), to_object(), to_file()
