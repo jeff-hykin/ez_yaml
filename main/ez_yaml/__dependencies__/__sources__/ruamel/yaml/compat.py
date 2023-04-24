@@ -199,7 +199,7 @@ def version_tnf(t1, t2=None):
     """
     return True if ruamel.yaml version_info < t1, None if t2 is specified and bigger else False
     """
-    exec(f"from {__package__}.__init__ import version_info; print(version_info)", globals(), globals())
+    exec(f"from {__package__}.__init__ import version_info", globals(), globals())
     if version_info < t1:
         return True
     if t2 is not None and version_info < t2:
