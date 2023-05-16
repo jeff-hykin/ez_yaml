@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 cd "$FORNIX_FOLDER/main"
-rm -rf ./dist
+rm -rf ./dist ./build
 python setup.py sdist bdist_wheel
 if [ -d "./dist" ]
 then

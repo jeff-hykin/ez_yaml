@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ez_yaml"
-version = "2.0.0"
+version = "2.0.1"
 description = "Straighforward wrapper around Ruamel Yaml"
 authors=[]
 
@@ -16,12 +16,11 @@ path = "main/ez_yaml"
 [tool.poetry.dependencies]
 python = ">=3.6,<3.12"
 pip = "20.1.1"
-"ruamel.yaml" = "^0.17.21"
-toml = "^0.10.2"
 
 [tool.poetry.dev-dependencies]
 twine = "3.4.1"
 "keyrings.alt" = "4.0.2"
+file-system-py = "0.0.11"
 toml = "^0.10.2"
 
 [build-system]
