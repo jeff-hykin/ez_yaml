@@ -164,7 +164,7 @@ for dependency_name, dependency_info in dependency_mapping.items():
             if os.path.isdir(target_path):
                 shutil.copytree(target_path, target_folder_for_import)
             else:
-                return shutil.copy(target_path, target_folder_for_import)
+                shutil.copy(target_path, target_folder_for_import)
     elif not target_path_obj.is_symlink() or final_target_of(target_folder_for_import) != dependency_info["path"]:
         # clear the way (encase something was in the way)
         remove(target_folder_for_import)
