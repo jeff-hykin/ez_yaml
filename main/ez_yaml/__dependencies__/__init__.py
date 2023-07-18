@@ -184,18 +184,3 @@ for dependency_name, dependency_info in dependency_mapping.items():
             pass
         else:
             raise error
-
-# replacements:
-    # this '''
-    #     from ruamel\.yaml\.
-    # '''
-    # replaced by '''
-    #     from \.
-    # '''
-    
-    # this '''
-    #     ^( *)import ruamel(.*?)(?=#|$)
-    # '''
-    # replaced by '''
-    #     $1exec(f"""import {".".join(__name__.split(".")[:-2])}$2;ruamel = {".".join(__name__.split(".")[:-2])}""")
-    # '''
