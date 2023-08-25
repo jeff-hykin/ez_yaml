@@ -1,3 +1,5 @@
+2.0.3
+    - fix case of yaml obj getting corrupted during Exception
 2.0.2
     - fix problems with trying to symlink on windows
 2.0.0
