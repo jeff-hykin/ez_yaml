@@ -31,6 +31,17 @@ setuptools.setup(
         package_info["name"]: [
             each[len(package_info["name"])+1:]
                 for each in iterate_paths_in(package_info["name"], recursively=True)
+                    if (
+                        not each.endswith(".pyc")
+                        and not each.endswith("/.keep")
+                        and not each.endswith('.canonical')
+                        and not each.endswith('.data')
+                        and not each.endswith('.error')
+                        and not each.endswith('.skip-ext')
+                        and ('/settings/' not in each)
+                        and ('/commands/' not in each)
+                        and ('/documentation/' not in each)
+                    )
         ],
     },
     install_requires=[
