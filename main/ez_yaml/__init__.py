@@ -5,20 +5,31 @@ from pathlib import Path
 import os
 
 # setup loader (basically options)
-yaml = ruamel.yaml.YAML()
-yaml.indent(mapping=3, sequence=2, offset=0)
-yaml.allow_duplicate_keys = True
-yaml.explicit_start = False
-# show null
-yaml.representer.add_representer(
-    type(None),
-    lambda self, data: self.represent_scalar(u'tag:yaml.org,2002:null', u'null')
-)
+def init_yaml():
+    yaml = ruamel.yaml.YAML()
+    yaml.indent(mapping=3, sequence=2, offset=0)
+    yaml.allow_duplicate_keys = True
+    # yaml.width = float("Infinity") # or some other big enough value to prevent line-wrap
+    yaml.explicit_start = False
+    yaml.explicit_end = False
+    # show null
+    yaml.representer.add_representer(
+        type(None),
+        lambda self, data: self.represent_scalar(u'tag:yaml.org,2002:null', u'null')
+    )
+    return yaml
+
+yaml = init_yaml()
 
 def to_string(obj, options=None):
+    global yaml
     if options == None: options = {}
     string_stream = StringIO()
-    yaml.dump(obj, string_stream, **options)
+    try:
+        yaml.dump(obj, string_stream, **options)
+    except Exception as error:
+        yaml = init_yaml()
+        raise error
     output_str = string_stream.getvalue()
     string_stream.close()
     return output_str
@@ -38,10 +49,15 @@ def to_object(string=None, file_path=None, options=None, load_nested_yaml=False)
         return output
 
 def to_file(obj, file_path, options=None):
+    global yaml
     if options == None: options = {}
     as_path_object = Path(file_path)
     with as_path_object.open('w') as output_file:
-        return yaml.dump(obj, output_file, **options)
+        try:
+            return yaml.dump(obj, output_file, **options)
+        except Exception as error:
+            yaml = init_yaml()
+            raise error
 
 def eval_load_yaml_file_tag(yaml_obj, key_list=[], original_file_path=""):
     """
