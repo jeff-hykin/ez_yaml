@@ -4,38 +4,61 @@ from io import StringIO
 from pathlib import Path
 import os
 
-# setup loader (basically options)
-def init_yaml():
-    yaml = ruamel.yaml.YAML()
-    yaml.indent(mapping=3, sequence=2, offset=0)
-    yaml.allow_duplicate_keys = True
-    # yaml.width = float("Infinity") # or some other big enough value to prevent line-wrap
-    yaml.explicit_start = False
-    yaml.explicit_end = False
-    # show null
-    yaml.representer.add_representer(
-        type(None),
-        lambda self, data: self.represent_scalar(u'tag:yaml.org,2002:null', u'null')
+def _get_default_settings():
+    return dict(
+        safe=False,
+        width=None,
+        allow_duplicate_keys=True,
+        explicit_start=False,
+        explicit_end=False,
+        explict_null=True,
+        indent_mapping=3,
+        indent_sequence=2,
+        offset=0,
     )
+
+settings = _get_default_settings()
+global_settings = settings
+
+# setup loader (basically options)
+def get_yaml(settings={}):
+    settings_with_defaults = _get_default_settings()
+    settings_with_defaults.update(settings or {})
+    settings = settings_with_defaults
+    if settings["safe"]:
+        yaml = ruamel.yaml.YAML(type="safe")
+    else:
+        yaml = ruamel.yaml.YAML()
+    
+    yaml.indent(mapping=settings["indent_mapping"], sequence=settings["indent_sequence"], offset=settings["offset"])
+    yaml.allow_duplicate_keys = settings["allow_duplicate_keys"]
+    yaml.width = settings["width"]
+    yaml.explicit_start = settings["explicit_start"]
+    yaml.explicit_end = settings["explicit_end"]
+    
+    if settings["explict_null"]:
+        yaml.representer.add_representer(
+            type(None),
+            lambda self, data: self.represent_scalar(u'tag:yaml.org,2002:null', u'null')
+        )
     return yaml
 
-yaml = init_yaml()
+yaml = get_yaml()
 
-def to_string(obj, options=None):
-    global yaml
+def to_string(obj, options=None, settings=None):
     if options == None: options = {}
+    if settings == None: settings = {}
+    yaml = get_yaml({**global_settings, **settings, })
     string_stream = StringIO()
-    try:
-        yaml.dump(obj, string_stream, **options)
-    except Exception as error:
-        yaml = init_yaml()
-        raise error
+    yaml.dump(obj, string_stream, **options)
     output_str = string_stream.getvalue()
     string_stream.close()
     return output_str
 
-def to_object(string=None, file_path=None, options=None, load_nested_yaml=False):
+def to_object(string=None, file_path=None, options=None, load_nested_yaml=False, settings=None):
     if options == None: options = {}
+    if settings == None: settings = {}
+    yaml = get_yaml({**global_settings, **settings, })
     if file_path is not None:
         as_path_object = Path(file_path)
         output = yaml.load(as_path_object, **options)
@@ -48,16 +71,13 @@ def to_object(string=None, file_path=None, options=None, load_nested_yaml=False)
             output = eval_load_yaml_file_tag(output, original_file_path=":<inline-string>:") 
         return output
 
-def to_file(obj, file_path, options=None):
-    global yaml
+def to_file(obj, file_path, options=None, settings=None):
     if options == None: options = {}
+    if settings == None: settings = {}
+    yaml = get_yaml({**global_settings, **settings, })
     as_path_object = Path(file_path)
     with as_path_object.open('w') as output_file:
-        try:
-            return yaml.dump(obj, output_file, **options)
-        except Exception as error:
-            yaml = init_yaml()
-            raise error
+        return yaml.dump(obj, output_file, **options)
 
 def eval_load_yaml_file_tag(yaml_obj, key_list=[], original_file_path=""):
     """
@@ -78,7 +98,6 @@ def eval_load_yaml_file_tag(yaml_obj, key_list=[], original_file_path=""):
                 load_file_path = os.path.join(os.path.dirname(original_file_path), load_file_path)
             try:
                 data = to_object(file_path=load_file_path)
-                print(f'''data = {data}''')
                 return data
             except Exception as error:
                 if not os.path.isfile(load_file_path):
@@ -140,8 +159,10 @@ def eval_load_yaml_file_tag(yaml_obj, key_list=[], original_file_path=""):
     else:
         return yaml_obj
 
-def merge_files_to_object(*files, options=None):
+def merge_files_to_object(*files, options=None, settings=None):
     if options == None: options = {}
+    if settings == None: settings = {}
+    yaml = get_yaml({**global_settings, **settings, })
     # yup ... this is how to check
     # https://stackoverflow.com/questions/1952464/in-python-how-do-i-determine-if-an-object-is-iterable
     def is_iterable(thing):

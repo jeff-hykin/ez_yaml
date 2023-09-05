@@ -2,16 +2,16 @@
 
 `pip install ez_yaml`
 
-# Use
+# Usage
 
 ```python
 import ez_yaml
 
-# to_string(obj, options={})
+# to_string(obj, settings={})
 ez_yaml.to_string({"thing": 1, "abc": [ 1,2,3 ]})
 
-# to_object(file_path, options={})
-# to_object(string   , options={})
+# to_object(file_path, settings={})
+# to_object(string   , settings={})
 ez_yaml.to_object(string='''
 
 thing: 1
@@ -22,12 +22,46 @@ abc:
 
 ''')
 
-# to_file(obj, file_path, options={})
+# to_file(obj, file_path, settings={})
 ez_yaml.to_file(
     {"thing": 1, "abc": [ 1,2,3 ]},
     file_path="./my_file.yaml",
 )
 
+```
+
+# Settings
+
+```python
+import ez_yaml
+
+# to_string(obj, settings={})
+ez_yaml.to_string(
+    {"thing": 1, "abc": [ 1,2,3 ]},
+    settings=dict(
+        # these are the default values
+        safe=False,
+        width=None,
+        allow_duplicate_keys=True,
+        explicit_start=False,
+        explicit_end=False,
+        explict_null=True,
+        indent_mapping=3,
+        indent_sequence=2,
+        offset=0,
+    )
+)
+
+# to_file(obj, file_path, settings={})
+ez_yaml.to_file(
+    {"thing": 1, "abc": [ 1,2,3 ]},
+    file_path="./my_file.yaml",
+    settings=dict(
+        width=9999999999999,
+        explicit_start=True,
+        explicit_end=True,
+    )
+)
 ```
 
 # Custom Yaml Tags Example
