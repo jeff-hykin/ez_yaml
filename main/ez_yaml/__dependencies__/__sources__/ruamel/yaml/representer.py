@@ -110,8 +110,18 @@ class BaseRepresenter:
                 if None in self.yaml_multi_representers:
                     node = self.yaml_multi_representers[None](self, data)
                 elif None in self.yaml_representers:
-                    node = self.yaml_representers[None](self, data)
+                    try:
+                        node = self.yaml_representers[None](self, data)
+                    except Exception as error:
+                        class_name = repr(type(data))[:-2]
+                        # floats from a different version of ruamel yaml (two versions same project)
+                        # I'm not sure why only floats are ScalarFloat (when read from yaml) but ints are normal python its
+                        if class_name.endswith("yaml.scalarfloat.ScalarFloat"):
+                            node = ScalarNode("tag:yaml.org,2002:float", str(data))
+                        else:
+                            raise error
                 else:
+                    # this case always results in an error AFAIK
                     node = ScalarNode(None, str(data))
         # if alias_key is not None:
         #     self.represented_objects[alias_key] = node
