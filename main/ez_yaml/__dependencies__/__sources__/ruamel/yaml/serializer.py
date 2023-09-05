@@ -169,7 +169,7 @@ class Serializer:
                 implicit = (
                     (node.tag == detected_tag),
                     (node.tag == default_tag),
-                    node.tag.startswith('tag:yaml.org,2002:'),
+                    (node.tag or "").startswith('tag:yaml.org,2002:'),
                 )
                 self.emitter.emit(
                     ScalarEvent(
