@@ -18,7 +18,7 @@ def _get_default_settings():
     )
 
 settings = _get_default_settings()
-global_settings = settings
+global_settings = settings # alias (prefered name, but dont want to break backwards compat)
 
 # setup loader (basically options)
 def get_yaml(settings={}):
