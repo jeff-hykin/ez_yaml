@@ -1,3 +1,5 @@
+2.2.0
+    - add `allow_duplicate_keys="overwrite"` setting to use the value of the last duplicate key-value instead of first key-value entry
 2.1.0
     - allow settings to be customized per function call
     - handle seralizing ScalarFloat's of other yaml parsers

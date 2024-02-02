@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ez_yaml"
-version = "2.1.0"
+version = "2.2.0"
 description = "Straighforward wrapper around Ruamel Yaml"
 authors=[]
 
