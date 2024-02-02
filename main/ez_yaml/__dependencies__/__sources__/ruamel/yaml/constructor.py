@@ -292,6 +292,8 @@ class BaseConstructor:
                     warnings.warn(DuplicateKeyFutureWarning(*args))
                 else:
                     raise DuplicateKeyError(*args)
+            if self.allow_duplicate_keys=="overwrite":
+                return True
             return False
         return True
 
